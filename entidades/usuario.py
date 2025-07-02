@@ -47,7 +47,17 @@ class Usuario:
         plataformas = [i.plataforma_interacao for i in self.__interacoes if hasattr(i, 'plataforma_interacao')]
 
         # usa o counter para contar quantas vezes cada plataforma aparece na lista e .most_common para retornar a lista de mais frequentes
-        return Counter(plataformas).most_common(top_n) 
+        return Counter(plataformas).most_common(top_n)
+
+    def calcular_tempo_total_assistido(self):
+        """
+        Retorna o tempo total assistido pelo usuário em todas as plataformas (em segundos).
+        """
+        plataformas = set(interacao.plataforma_interacao for interacao in self.interacoes)
+        total = 0
+        for plataforma in plataformas:
+            total += self.calcular_tempo_total_em_plataforma(plataforma)
+        return total 
 
     def __str__(self):
         return f"Usuário {self.__id_usuario}"
