@@ -27,15 +27,10 @@ class SistemaAnaliseEngajamento:
     """
 
     def __init__(self):
-        # Dicionários privados conforme especificação
-        # self.__plataformas_registradas = {}    # plataforma (str) -> Plataforma
-        # self.__conteudos_registrados = {}      # id_conteudo (int) -> Conteudo
-        # self.__usuarios_registrados = {}       # id_usuario (int) -> Usuario
-        self._ids_plataformas_existentes = set() # Conjunto para armazenar IDs já usados (do CSV e gerados)
-        self._fila_interacoes_brutas = Fila()
-        self._arvore_conteudos = ArvoreBinariaBusca()  # id_conteudo como chave
-        self._arvore_usuarios = ArvoreBinariaBusca()   # id_usuario como chave
-        self._plataformas_registradas = {}  # nome_plataforma -> Plataforma
+        self._fila_interacoes_brutas = Fila() # Fila para armazenar interações brutas do CSV
+        self._arvore_conteudos = ArvoreBinariaBusca() # Árvore para armazenar conteúdos
+        self._arvore_usuarios = ArvoreBinariaBusca()   # Árvore para armazenar usuários
+        self._plataformas_registradas = {}  # Dicionário para armazenar plataformas registradas
   
     def _validar_interacao(self, interacao):
         """Executa todas as validações necessárias para uma interação."""
@@ -82,8 +77,7 @@ class SistemaAnaliseEngajamento:
                 leitor = csv.DictReader(f) # considera automaticamente que o arquivo possui cabeçalho
                 for linha in leitor:
                     try:
-                        # Valida linha antes de enfileirar
-                        self._validar_interacao(linha)
+                        self._validar_interacao(linha) # Valida linha antes de enfileirar
                         self._fila_interacoes_brutas.enfileirar(linha)
                     except ValueError as e:
                         print(f"[AVISO] Linha ignorada: {e}")
@@ -94,21 +88,20 @@ class SistemaAnaliseEngajamento:
 
     def processar_interacoes_da_fila(self):
         """
-        Processa o CSV: instancia objetos, valida dados e vincula entidades.
-        Garante que IDs de plataformas do CSV são respeitados para evitar duplicações.
+        Processa as interações armazenadas na fila, criando ou atualizando conteúdos, usuários e plataformas.
+        Vincula interações a conteúdos e usuários.
         """
-
-        while not self._fila_interacoes_brutas.is_empty():
-            dados = self._fila_interacoes_brutas.desenfileirar()
-            try:
+        while not self._fila_interacoes_brutas.is_empty(): # Enquanto houver interações na fila
+            dados = self._fila_interacoes_brutas.desenfileirar() # Obtém a próxima interação da fila
+            try: # Valida e processa a interação
                 id_conteudo = int(dados['id_conteudo'])
                 id_usuario = int(dados['id_usuario'])
                 nome_plataforma = dados['plataforma']
                 nome_conteudo = dados['nome_conteudo'].strip()
 
                 # Conteúdo
-                conteudo = self._arvore_conteudos.buscar(id_conteudo)
-                if conteudo is None:
+                conteudo = self._arvore_conteudos.buscar(id_conteudo) # Busca conteúdo na árvore
+                if conteudo is None: # Se não encontrar, cria um novo conteúdo
                     tipo_conteudo = dados.get('tipo_conteudo', 'video').strip().lower()
                     duracao = int(dados.get('duracao_total_seg', 0))
                     if tipo_conteudo == "video":
@@ -126,9 +119,10 @@ class SistemaAnaliseEngajamento:
                     self._arvore_usuarios.inserir(id_usuario, usuario) # Insere o usuário na árvore
 
                 # Plataforma
-
                 if nome_plataforma not in self._plataformas_registradas:
                     plataforma = self.obter_plataforma(nome_plataforma) # Obtém ou cadastra a plataforma
+                else:
+                    plataforma = self._plataformas_registradas[nome_plataforma]
 
                 # Interação
                 try:
@@ -137,14 +131,16 @@ class SistemaAnaliseEngajamento:
                     print(f"[Linha ignorada]: Erro ao criar Interacao: {err}.")
                     continue
 
-                # Vincula interação a conteúdo e usuário
+                # Vincula interação a conteúdo, usuário e plataforma
                 conteudo.adicionar_interacao(interacao)
                 usuario.adicionar_interacao(interacao)
+                plataforma.adicionar_interacao(interacao)
 
             except Exception as e:
                 print(f"[ERRO] Falha ao processar interação: {e}") 
 
     # Métodos de gerenciamento de plataforma
+
     def cadastrar_plataforma(self, nome_plataforma: str):
         """
         Cadastra uma nova plataforma se não existir. Retorna o objeto Plataforma.
@@ -174,18 +170,30 @@ class SistemaAnaliseEngajamento:
         return list(self._plataformas_registradas.values()) 
 
     def listar_conteudos(self):
+        """
+        Retorna uma lista de todos os conteúdos cadastrados.
+        """
         return self._arvore_conteudos.percurso_em_ordem()
 
     def listar_usuarios(self):
+        """
+        Retorna uma lista de todos os usuários cadastrados.
+        """
         return self._arvore_usuarios.percurso_em_ordem()
 
     def listar_plataformas(self):
-        return sorted(self._plataformas_registradas.values(), key=lambda p: p.nome)        
+        """
+        Retorna uma lista de todas as plataformas registradas, ordenadas por nome.
+        """
+        plataformas = list(self._plataformas_registradas.values())
+        algoritmo = 'insertion' if len(plataformas) <= 20 else 'quick'
+        self._ordenar_lista(plataformas, algoritmo=algoritmo, key=lambda p: p.nome_plataforma.lower(), reverse=False)
+        return plataformas  # Retorna a lista de plataformas ordenadas      
            
     
     # Algoritmos de ordenação
 
-    def _ordenar_lista(self, lista, key=None, algoritmo='quick', reverse=False):
+    def _ordenar_lista(self, lista, algoritmo, key=None, reverse=False):
         """
         Ordena uma lista usando quicksort ou insertion sort.
         """
@@ -219,12 +227,23 @@ class SistemaAnaliseEngajamento:
                 j -= 1
             lista[j + 1] = atual
 
+    def identificar_top_n(self, lista, top_n, metrica):
+        """
+        Ordena o top N de uma lista por uma métrica escolhida.
+        """
+        algoritmo = 'insertion' if len(lista) <= 20 else 'quick'
+        self._ordenar_lista(lista, algoritmo=algoritmo, key=metrica, reverse=True)
+        return lista[:top_n] # Retorna o top N
+
 
     # Métodos de análise e relatório
 
     def gerar_relatorio_engajamento_conteudos(self, top_n=10):
+        """
+        Gera relatórios de engajamento dos conteúdos cadastrados.
+        Permite ao usuário escolher entre diferentes métricas de engajamento.
+        """
         conteudos = self._arvore_conteudos.percurso_em_ordem() # Obtém lista de todos conteúdos cadastrados
-        conteudos_ordenados = conteudos.copy()  # Cria uma cópia para ordenação
 
         metricas_map = { # Mapeamento de métricas para funções de cálculo e nomes amigáveis usados no cabeçalho do relatório
             "total_interacoes_engajamento": {'func': lambda c: c.calcular_total_interacoes_engajamento(),'nome':'TOTAL DE INTERAÇÕES DE ENGAJAMENTO'},
@@ -253,9 +272,9 @@ class SistemaAnaliseEngajamento:
                 # Ações baseadas na métrica escolhida
                 if sub_opcao == "1":
                     os.system('cls')
-                    conteudos_ordenados = conteudos.copy()  # Reseta a lista para o estado original
-                    print("RELATÓRIO GERAL DE ENGAJAMENTO DOS CONTEÚDOS:\n")
-                    for conteudo in conteudos_ordenados:
+
+                    print("--- RELATÓRIO GERAL DE ENGAJAMENTO DOS CONTEÚDOS ---\n")
+                    for conteudo in conteudos:
                         metricas = conteudo.calcular_metricas()
                         print(f"ID do Conteúdo: {conteudo.id_conteudo}")
                         print(f"  Nome do Conteúdo: {conteudo.nome_conteudo}")
@@ -274,10 +293,12 @@ class SistemaAnaliseEngajamento:
                         else:
                             print("    Nenhum comentário registrado.")
                         print("-" * 80)
+                    input("\nPressione Enter para voltar...")
             
                 elif sub_opcao in ["2", "3", "4", "5", "6", "7", "8"]:
                     os.system('cls')
-                    metrica_keys = {
+                    conteudos_ordenados = conteudos.copy()  # Cria ou reseta a lista ordenada para o estado original
+                    metrica_keys = { # Mapeamento de opções para chaves de métrica
                         "2": "total_interacoes_engajamento",
                         "3": "visualizacoes",
                         "4": "likes",
@@ -287,24 +308,27 @@ class SistemaAnaliseEngajamento:
                         "8": "media_tempo_consumo"
                     }
                     metrica = metrica_keys[sub_opcao]
-                    conteudos_ordenados = self.identificar_top_n(conteudos, top_n, metricas_map[metrica]['func'])
+                    top_conteudos = self.identificar_top_n(conteudos_ordenados, top_n, metricas_map[metrica]['func'])
 
                     print(f"TOP {top_n} CONTEÚDOS POR {metricas_map[metrica]['nome']}:\n")
                     print(f"{'ID':<4} | {'Conteúdo':<30} | {metricas_map[metrica]['nome']:<25}")
                     print("-" * 65)
-                    for conteudo in conteudos_ordenados:
+                    for conteudo in top_conteudos:
                         valor = metricas_map[metrica]['func'](conteudo)
                         print(f"{conteudo.id_conteudo:<4} | {conteudo.nome_conteudo:<30} | {valor:<25.2f}" if isinstance(valor, float) else f"{conteudo.id_conteudo:<4} | {conteudo.nome_conteudo:<30} | {valor:<25}")
+                    input("\nPressione Enter para voltar...")
                 elif sub_opcao == "0":
                     break  # Sai do loop de métricas
                 else:
                     print("Opção inválida. Tente novamente.")
-
-                input("\nPressione Enter para voltar...")
+                    input("\nPressione Enter para voltar...")
 
     def gerar_relatorio_atividade_usuarios(self, top_n=10):
+        """
+        Gera relatórios de atividade dos usuários cadastrados.
+        Permite ao usuário escolher entre diferentes métricas de atividade.
+        """
         usuarios = self._arvore_usuarios.percurso_em_ordem()
-        usuarios_ordenados = usuarios.copy()
 
         metricas_map = {
             'quantidade_interacoes': {'func': lambda u: len(u.interacoes), 'nome': 'INTERAÇÕES'},
@@ -316,17 +340,18 @@ class SistemaAnaliseEngajamento:
                 os.system('cls') # limpa o terminal
                 print("--- RELATÓRIOS DE ENGAJAMENTO DOS USUÁRIOS ---\n")
                 print("1 - Relatório geral com todas interações dos usuários")
-                print("2 - Top 10 por por quantidade de interações")
-                print("3 - Top 10 por quantidade de conteúdos distintos")
-                print("4 - Top 10 por tempo total assistido")
+                print("2 - Buscar interações por usuário")
+                print("3 - Top 10 por por quantidade de interações")
+                print("4 - Top 10 por quantidade de conteúdos distintos")
+                print("5 - Top 10 por tempo total assistido")
                 print("0 - Voltar ao menu principal.")
                 sub_opcao = input("\nEscolha uma opção: ").strip()
 
                 # Ações baseadas na métrica escolhida
                 if sub_opcao == "1":
                     os.system('cls')
-                    usuarios_ordenados = usuarios.copy()  # Reseta a lista para o estado original
-                    print("\n--- LISTA DE TODAS AS INTERAÇÕES POR USUÁRIO ---\n")
+
+                    print("--- LISTA DE TODAS AS INTERAÇÕES POR USUÁRIO ---\n")
                     print(f"{'Usuário':<8} | {'Interação':<12} | {'Conteúdo':<28} | {'Plataforma':<14} | {'Data/Hora':<16} | {'Duração(s)':<10} | {'Comentário'}")
                     print("-" * 150)
                     for usuario in usuarios:
@@ -343,21 +368,25 @@ class SistemaAnaliseEngajamento:
                             comentario = interacao.comment_text if getattr(interacao, 'tipo_interacao', '') == 'comment' else ""
                             print(f"{usuario.id_usuario if idx == 0 else '':<8} | {interacao.tipo_interacao:<12} | {nome_conteudo:<28} | {nome_plataforma:<14} | {data_hora:<16} | {str(duracao):<10} | {comentario}")
                         print("-" * 150)  # Linha para separar blocos de usuários
-                elif sub_opcao in ('2', '3', '4'):
+                    input("\nPressione Enter para voltar...")
+                elif sub_opcao == '2':
                     os.system('cls')
+                    self.buscar_interacoes_usuario()  # acessa função que busca interações de um usuário específico
+                    input("\nPressione Enter para voltar...")
+                elif sub_opcao in ('3', '4', '5'):
+                    os.system('cls')
+                    usuarios_ordenados = usuarios.copy()  # Cria ou reseta a lista para o estado original
                     metrica_keys = {
-                    "2": "quantidade_interacoes",
-                    "3": "quantidade_conteudos",
-                    "4": "tempo_total_assistido",
+                    "3": "quantidade_interacoes",
+                    "4": "quantidade_conteudos",
+                    "5": "tempo_total_assistido",
                     }
                     metrica = metrica_keys[sub_opcao]
                     top_usuarios = self.identificar_top_n(usuarios_ordenados, top_n, metricas_map[metrica]['func'])
 
-
                     print(f"TOP {top_n} USUÁRIOS POR {metricas_map[metrica]['nome']}:\n")
                     print(f"{'Usuário':<7} | {'Interações':<10} | {'Comentários':<11} | {'Conteúdos':<9} | {'Tempo Total Assistido':<24} | {'Plataformas Mais Frequentes':<35} | {'Views':<7} | {'Likes':<7} | {'Shares':<7}")
                     print("-" * 140)
-
                     for usuario in top_usuarios:
                         plataformas_str = ', '.join(
                             f"{p[0].nome_plataforma}({p[1]})" if hasattr(p[0], 'nome_plataforma') else str(p[0])
@@ -367,27 +396,19 @@ class SistemaAnaliseEngajamento:
                             f"{len(usuario.interacoes):<10} | "
                             f"{len(usuario.filtrar_interacoes_por_tipo('comment')):<11} | "
                             f"{len(usuario.obter_conteudos_unicos()):<9} | "
-                            f"{str(timedelta(seconds=usuario.calcular_tempo_total_assistido())):<24} | "
+                            f"{str(timedelta(seconds=int(usuario.calcular_tempo_total_assistido()))):<24} | "
                             f"{plataformas_str:<35} | "
                             f"{len(usuario.filtrar_interacoes_por_tipo('view_start')):<7} | "
                             f"{len(usuario.filtrar_interacoes_por_tipo('like')):<7} | "
                             f"{len(usuario.filtrar_interacoes_por_tipo('share')):<7}")
                     print("-" * 140)
+                    input("\nPressione Enter para voltar...")
 
                 elif sub_opcao == "0":
                     break  # Sai do loop de métricas
                 else:
                     print("Opção inválida. Tente novamente.")
-                
-                input("\nPressione Enter para voltar...")
-
-    def identificar_top_n(self, lista, top_n, metrica):
-        """
-        Ordena o top N de uma lista por uma métrica escolhida.
-        """
-        algoritmo = 'insertion' if len(lista) <= 20 else 'quick' # Define algoritmo de ordenação baseado no tamanho da lista
-        self._ordenar_lista(lista, key=metrica, algoritmo=algoritmo, reverse=True)
-        return lista[:top_n] # Retorna o top N
+                    input("\nPressione Enter para voltar...")
     
     def buscar_interacoes_usuario(self):
         """
@@ -400,23 +421,16 @@ class SistemaAnaliseEngajamento:
             return
 
         usuario = self._arvore_usuarios.buscar(id_usuario)
-
         if not usuario:
             print("Usuário não encontrado.")
             return
         
         interacoes = usuario.interacoes.copy()
         algoritmo = 'insertion' if len(interacoes) <= 20 else 'quick'
-        self._ordenar_lista(
-            interacoes,
-            key=lambda i: getattr(i, 'timestamp_interacao', ''),
-            algoritmo=algoritmo,
-            reverse=False  # False para ordem cronológica
-        )
+        self._ordenar_lista(interacoes, algoritmo=algoritmo,  key=lambda i: getattr(i, 'timestamp_interacao', ''), reverse=False)
 
         print(f"\n{'Interação':<12} | {'Conteúdo':<28} | {'Plataforma':<14} | {'Data/Hora':<19} | {'Duração (s)':<11} | {'Comentário'}")
         print("-" * 150)
-
         for interacao in interacoes:
             nome_conteudo = getattr(interacao.conteudo_associado, 'nome_conteudo', 'N/A')
             nome_plataforma = getattr(interacao.plataforma_interacao, 'nome_plataforma', 'N/A')
@@ -427,6 +441,62 @@ class SistemaAnaliseEngajamento:
             print(f"{interacao.tipo_interacao:<12} | {nome_conteudo:<28} | {nome_plataforma:<14} | {data_hora:<19} | {str(duracao):<11} | {comentario}")
 
         print("-" * 150)
+    
+    def gerar_relatorio_engajamento_plataformas(self, top_n=10):
+        plataformas = self.listar_plataformas()  # Obtém lista de todas plataformas cadastradas
+
+        metricas_map = {
+            'quantidade_interacoes': {'func': lambda p: p.calcular_total_interacoes_engajamento(), 'nome': 'INTERAÇÕES DE ENGAJAMENTO'},
+            'tempo_medio_consumo': {'func': lambda p: p.calcular_media_tempo_consumo(), 'nome': 'TEMPO MÉDIO DE CONSUMO'},
+            'tempo_total_assistido': {'func': lambda p: p.calcular_tempo_total_consumo(), 'nome': 'TEMPO TOTAL DE CONSUMO'}
+        }
+
+        while True:
+            os.system('cls')
+            print("--- RELATÓRIO DE ENGAJAMENTO DAS PLATAFORMAS ---\n")
+            print("1 - Listar todas as plataformas registradas")
+            print("2 - Top 10 por engajamento")
+            print("3 - Top 10 por tempo médio de consumo")
+            print("4 - Top 10 por tempo total de consumo")
+            print("0 - Voltar ao menu principal")
+            sub_opcao = input("\nEscolha uma opção: ").strip()
+
+            if sub_opcao == "1":
+                os.system('cls')
+
+                print("--- LISTA DE TODAS PLATAFORMAS REGISTRADAS ---\n")
+                for plataforma in plataformas:
+                    print(f"- {plataforma.nome_plataforma}")
+                print("-" * 60)
+                input("\nPressione Enter para voltar...")
+
+            elif sub_opcao in ('2', '3', '4'):
+                    os.system('cls')
+                    plataformas_ordenadas = plataformas.copy()  # Cria ou reseta a lista para o estado original
+                    metrica_keys = {
+                    "2": "quantidade_interacoes",
+                    "3": "tempo_medio_consumo",
+                    "4": "tempo_total_assistido",
+                    }
+                    metrica = metrica_keys[sub_opcao]
+                    top_plataformas = self.identificar_top_n(plataformas_ordenadas, top_n, metricas_map[metrica]['func'])
+
+                    print(f"TOP {top_n} PLATAFORMAS POR {metricas_map[metrica]['nome']}:\n")
+                    print(f"{'Plataforma':<15} | {'Interações de Engajamento':<25} | {'Tempo Médio de Consumo':<22} | {'Tempo Total Assistido':<25}")
+                    print("-" * 140)
+                    for plataforma in top_plataformas:
+                        print(f"{plataforma.nome_plataforma:<15} | "
+                            f"{plataforma.calcular_total_interacoes_engajamento():<25} | "
+                            f"{str(timedelta(seconds=int(plataforma.calcular_media_tempo_consumo()))):<22} | "
+                            f"{str(timedelta(seconds=int(plataforma.calcular_tempo_total_consumo()))):<25}")
+                    print("-" * 140)
+                    input("\nPressione Enter para voltar...")
+
+            elif sub_opcao == "0":
+                break
+            else:
+                print("Opção inválida. Tente novamente.")
+                input("\nPressione Enter para voltar...")
     
     @property
     def plataformas_registradas(self):
