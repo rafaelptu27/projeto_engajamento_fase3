@@ -186,3 +186,143 @@ id_conteudo,nome_conteudo,id_usuario,timestamp_interacao,plataforma,tipo_interac
 7,Podcast GE Tabelando,298,2024-11-01 11:02:00,GE Globo,comment,,Melhor análise esportiva da internet.
 6,The Voice Brasil,299,2024-11-13 22:30:00,TV Globo,view_start,2980,
 6,The Voice Brasil,300,2024-11-13 22:33:00,Globoplay,like,,
+6,The Voice Brasil,120,2025-07-05 06:36:00,Globoplay,view_start,1002,
+2,Novela Renascer,210,2025-07-07 13:44:00,TV Globo,like,,
+3,Podcast Papo de Segunda,135,2025-07-02 13:19:00,G1,comment,,Muito bom!
+4,Jogo do Brasileirão Série A,201,2025-07-09 10:55:00,Premiere,share,,
+7,Podcast GE Tabelando,145,2025-07-03 19:12:00,Spotify,view_start,3200,
+1,Jornal Nacional,101,2025-07-01 08:15:00,TV Globo,comment,,Parabéns!
+10,Documentário Amazônia Viva,250,2025-07-10 17:30:00,Globoplay,view_start,5400,
+6,The Voice Brasil,130,2025-07-04 22:30:00,TV Globo,like,,
+13,Desenrola Brasil Podcast,140,2025-07-05 08:00:00,G1,view_start,1800,
+4,Jogo do Brasileirão Série A,220,2025-07-01 16:00:00,GE Globo,comment,,Que episódio!
+8,Sessão da Tarde Clássicos,115,2025-07-02 15:00:00,TV Globo,view_start,5400,
+12,Futebol de Sabado,205,2025-07-03 16:30:00,Sportv Play,like,,
+7,Podcast GE Tabelando,150,2025-07-04 11:00:00,GE Globo,comment,,Ótima análise!
+15,Domingão com Huck,199,2025-07-05 18:00:00,TV Globo,share,,
+2,Novela Renascer,110,2025-07-01 21:15:00,Globoplay,comment,,Não gostei.
+3,Podcast Papo de Segunda,201,2025-07-02 10:00:00,Globoplay,view_start,3600,
+6,The Voice Brasil,102,2025-07-03 22:35:00,Globoplay,comment,,Sensacional!
+1,Jornal Nacional,103,2025-07-04 20:05:00,TV Globo,like,,
+10,Documentário Amazônia Viva,104,2025-07-05 22:00:00,Globoplay,share,,
+13,Desenrola Brasil Podcast,105,2025-07-01 08:00:00,G1,comment,,Top demais!
+6,The Voice Brasil,120,2025-07-06 09:36:00,Globoplay,view_start,1100,
+2,Novela Renascer,210,2025-07-08 13:44:00,TV Globo,like,,
+3,Podcast Papo de Segunda,135,2025-07-03 13:19:00,G1,comment,,Muito bom!
+4,Jogo do Brasileirão Série A,201,2025-07-10 10:55:00,Premiere,share,,
+7,Podcast GE Tabelando,145,2025-07-04 19:12:00,Spotify,view_start,3400,
+1,Jornal Nacional,101,2025-07-02 08:15:00,TV Globo,comment,,Parabéns!
+10,Documentário Amazônia Viva,250,2025-07-11 17:30:00,Globoplay,view_start,5500,
+6,The Voice Brasil,130,2025-07-05 22:30:00,TV Globo,like,,
+13,Desenrola Brasil Podcast,140,2025-07-06 08:00:00,G1,view_start,1850,
+4,Jogo do Brasileirão Série A,220,2025-07-02 16:00:00,GE Globo,comment,,Que episódio!
+8,Sessão da Tarde Clássicos,115,2025-07-03 15:00:00,TV Globo,view_start,5200,
+12,Futebol de Sabado,205,2025-07-04 16:30:00,Sportv Play,like,,
+7,Podcast GE Tabelando,150,2025-07-05 11:00:00,GE Globo,comment,,Ótima análise!
+15,Domingão com Huck,199,2025-07-06 18:00:00,TV Globo,share,,
+2,Novela Renascer,110,2025-07-02 21:15:00,Globoplay,comment,,Não gostei.
+3,Podcast Papo de Segunda,201,2025-07-03 10:00:00,Globoplay,view_start,3500,
+6,The Voice Brasil,102,2025-07-04 22:35:00,Globoplay,comment,,Sensacional!
+1,Jornal Nacional,103,2025-07-05 20:05:00,TV Globo,like,,
+10,Documentário Amazônia Viva,104,2025-07-06 22:00:00,Globoplay,share,,
+13,Desenrola Brasil Podcast,105,2025-07-02 08:00:00,G1,comment,,Top demais!
+6,The Voice Brasil,120,2025-07-07 10:36:00,Globoplay,view_start,1200,
+2,Novela Renascer,210,2025-07-09 13:44:00,TV Globo,like,,
+3,Podcast Papo de Segunda,135,2025-07-04 13:19:00,G1,comment,,Muito bom!
+4,Jogo do Brasileirão Série A,201,2025-07-11 10:55:00,Premiere,share,,
+7,Podcast GE Tabelando,145,2025-07-05 19:12:00,Spotify,view_start,3500,
+1,Jornal Nacional,101,2025-07-03 08:15:00,TV Globo,comment,,Parabéns!
+10,Documentário Amazônia Viva,250,2025-07-12 17:30:00,Globoplay,view_start,5300,
+6,The Voice Brasil,130,2025-07-06 22:30:00,TV Globo,like,,
+13,Desenrola Brasil Podcast,140,2025-07-07 08:00:00,G1,view_start,1900,
+4,Jogo do Brasileirão Série A,220,2025-07-03 16:00:00,GE Globo,comment,,Que episódio!
+8,Sessão da Tarde Clássicos,115,2025-07-04 15:00:00,TV Globo,view_start,5000,
+12,Futebol de Sabado,205,2025-07-05 16:30:00,Sportv Play,like,,
+7,Podcast GE Tabelando,150,2025-07-06 11:00:00,GE Globo,comment,,Ótima análise!
+15,Domingão com Huck,199,2025-07-07 18:00:00,TV Globo,share,,
+2,Novela Renascer,110,2025-07-03 21:15:00,Globoplay,comment,,Não gostei.
+3,Podcast Papo de Segunda,201,2025-07-04 10:00:00,Globoplay,view_start,3400,
+6,The Voice Brasil,102,2025-07-05 22:35:00,Globoplay,comment,,Sensacional!
+1,Jornal Nacional,103,2025-07-06 20:05:00,TV Globo,like,,
+10,Documentário Amazônia Viva,104,2025-07-07 22:00:00,Globoplay,share,,
+13,Desenrola Brasil Podcast,105,2025-07-03 08:00:00,G1,comment,,Top demais!
+6,The Voice Brasil,120,2025-07-08 11:36:00,Globoplay,view_start,1300,
+2,Novela Renascer,210,2025-07-10 13:44:00,TV Globo,like,,
+3,Podcast Papo de Segunda,135,2025-07-05 13:19:00,G1,comment,,Muito bom!
+4,Jogo do Brasileirão Série A,201,2025-07-12 10:55:00,Premiere,share,,
+7,Podcast GE Tabelando,145,2025-07-06 19:12:00,Spotify,view_start,3600,
+1,Jornal Nacional,101,2025-07-04 08:15:00,TV Globo,comment,,Parabéns!
+10,Documentário Amazônia Viva,250,2025-07-13 17:30:00,Globoplay,view_start,5200,
+6,The Voice Brasil,130,2025-07-07 22:30:00,TV Globo,like,,
+13,Desenrola Brasil Podcast,140,2025-07-08 08:00:00,G1,view_start,1950,
+4,Jogo do Brasileirão Série A,220,2025-07-04 16:00:00,GE Globo,comment,,Que episódio!
+8,Sessão da Tarde Clássicos,115,2025-07-05 15:00:00,TV Globo,view_start,4800,
+12,Futebol de Sabado,205,2025-07-06 16:30:00,Sportv Play,like,,
+7,Podcast GE Tabelando,150,2025-07-07 11:00:00,GE Globo,comment,,Ótima análise!
+15,Domingão com Huck,199,2025-07-08 18:00:00,TV Globo,share,,
+2,Novela Renascer,110,2025-07-04 21:15:00,Globoplay,comment,,Não gostei.
+3,Podcast Papo de Segunda,201,2025-07-05 10:00:00,Globoplay,view_start,3300,
+6,The Voice Brasil,102,2025-07-06 22:35:00,Globoplay,comment,,Sensacional!
+1,Jornal Nacional,103,2025-07-07 20:05:00,TV Globo,like,,
+10,Documentário Amazônia Viva,104,2025-07-08 22:00:00,Globoplay,share,,
+13,Desenrola Brasil Podcast,105,2025-07-04 08:00:00,G1,comment,,Top demais!
+6,The Voice Brasil,120,2025-07-09 12:36:00,Globoplay,view_start,1400,
+2,Novela Renascer,210,2025-07-11 13:44:00,TV Globo,like,,
+3,Podcast Papo de Segunda,135,2025-07-06 13:19:00,G1,comment,,Muito bom!
+4,Jogo do Brasileirão Série A,201,2025-07-13 10:55:00,Premiere,share,,
+7,Podcast GE Tabelando,145,2025-07-07 19:12:00,Spotify,view_start,3700,
+1,Jornal Nacional,101,2025-07-05 08:15:00,TV Globo,comment,,Parabéns!
+10,Documentário Amazônia Viva,250,2025-07-14 17:30:00,Globoplay,view_start,5100,
+6,The Voice Brasil,130,2025-07-08 22:30:00,TV Globo,like,,
+13,Desenrola Brasil Podcast,140,2025-07-09 08:00:00,G1,view_start,2000,
+4,Jogo do Brasileirão Série A,220,2025-07-05 16:00:00,GE Globo,comment,,Que episódio!
+8,Sessão da Tarde Clássicos,115,2025-07-06 15:00:00,TV Globo,view_start,4600,
+12,Futebol de Sabado,205,2025-07-07 16:30:00,Sportv Play,like,,
+7,Podcast GE Tabelando,150,2025-07-08 11:00:00,GE Globo,comment,,Ótima análise!
+15,Domingão com Huck,199,2025-07-09 18:00:00,TV Globo,share,,
+2,Novela Renascer,110,2025-07-05 21:15:00,Globoplay,comment,,Não gostei.
+3,Podcast Papo de Segunda,201,2025-07-06 10:00:00,Globoplay,view_start,3200,
+6,The Voice Brasil,102,2025-07-07 22:35:00,Globoplay,comment,,Sensacional!
+1,Jornal Nacional,103,2025-07-08 20:05:00,TV Globo,like,,
+10,Documentário Amazônia Viva,104,2025-07-09 22:00:00,Globoplay,share,,
+13,Desenrola Brasil Podcast,105,2025-07-05 08:00:00,G1,comment,,Top demais!
+6,The Voice Brasil,120,2025-07-10 13:36:00,Globoplay,view_start,1500,
+2,Novela Renascer,210,2025-07-12 13:44:00,TV Globo,like,,
+3,Podcast Papo de Segunda,135,2025-07-07 13:19:00,G1,comment,,Muito bom!
+4,Jogo do Brasileirão Série A,201,2025-07-14 10:55:00,Premiere,share,,
+7,Podcast GE Tabelando,145,2025-07-08 19:12:00,Spotify,view_start,3800,
+1,Jornal Nacional,101,2025-07-06 08:15:00,TV Globo,comment,,Parabéns!
+10,Documentário Amazônia Viva,250,2025-07-15 17:30:00,Globoplay,view_start,5000,
+6,The Voice Brasil,130,2025-07-09 22:30:00,TV Globo,like,,
+13,Desenrola Brasil Podcast,140,2025-07-10 08:00:00,G1,view_start,2050,
+4,Jogo do Brasileirão Série A,220,2025-07-06 16:00:00,GE Globo,comment,,Que episódio!
+8,Sessão da Tarde Clássicos,115,2025-07-07 15:00:00,TV Globo,view_start,4400,
+12,Futebol de Sabado,205,2025-07-08 16:30:00,Sportv Play,like,,
+7,Podcast GE Tabelando,150,2025-07-09 11:00:00,GE Globo,comment,,Ótima análise!
+15,Domingão com Huck,199,2025-07-10 18:00:00,TV Globo,share,,
+2,Novela Renascer,110,2025-07-06 21:15:00,Globoplay,comment,,Não gostei.
+3,Podcast Papo de Segunda,201,2025-07-07 10:00:00,Globoplay,view_start,3100,
+6,The Voice Brasil,102,2025-07-08 22:35:00,Globoplay,comment,,Sensacional!
+1,Jornal Nacional,103,2025-07-09 20:05:00,TV Globo,like,,
+10,Documentário Amazônia Viva,104,2025-07-10 22:00:00,Globoplay,share,,
+13,Desenrola Brasil Podcast,105,2025-07-06 08:00:00,G1,comment,,Top demais!
+6,The Voice Brasil,120,2025-07-11 14:36:00,Globoplay,view_start,1600,
+2,Novela Renascer,210,2025-07-13 13:44:00,TV Globo,like,,
+3,Podcast Papo de Segunda,135,2025-07-08 13:19:00,G1,comment,,Muito bom!
+4,Jogo do Brasileirão Série A,201,2025-07-15 10:55:00,Premiere,share,,
+7,Podcast GE Tabelando,145,2025-07-09 19:12:00,Spotify,view_start,3900,
+1,Jornal Nacional,101,2025-07-07 08:15:00,TV Globo,comment,,Parabéns!
+10,Documentário Amazônia Viva,250,2025-07-16 17:30:00,Globoplay,view_start,4900,
+6,The Voice Brasil,130,2025-07-10 22:30:00,TV Globo,like,,
+13,Desenrola Brasil Podcast,140,2025-07-11 08:00:00,G1,view_start,2100,
+4,Jogo do Brasileirão Série A,220,2025-07-07 16:00:00,GE Globo,comment,,Que episódio!
+8,Sessão da Tarde Clássicos,115,2025-07-08 15:00:00,TV Globo,view_start,4200,
+12,Futebol de Sabado,205,2025-07-09 16:30:00,Sportv Play,like,,
+7,Podcast GE Tabelando,150,2025-07-10 11:00:00,GE Globo,comment,,Ótima análise!
+15,Domingão com Huck,199,2025-07-11 18:00:00,TV Globo,share,,
+2,Novela Renascer,110,2025-07-07 21:15:00,Globoplay,comment,,Não gostei.
+3,Podcast Papo de Segunda,201,2025-07-08 10:00:00,Globoplay,view_start,3000,
+6,The Voice Brasil,102,2025-07-09 22:35:00,Globoplay,comment,,Sensacional!
+1,Jornal Nacional,103,2025-07-10 20:05:00,TV Globo,like,,
+10,Documentário Amazônia Viva,104,2025-07-11 22:00:00,Globoplay,share,,
+13,Desenrola Brasil Podcast,105,2025-07-07 08:00:00,G1,comment,,Top demais!

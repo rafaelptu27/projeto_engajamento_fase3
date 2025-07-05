@@ -1,3 +1,9 @@
+"""
+Árvore binária de busca genérica, onde cada nó pode armazenar uma chave e um valor.
+Permite inserção, busca, remoção e percurso em ordem dos elementos.
+A árvore não é balanceada, em casos extremos (como inserção ordenada), a complexidade pode se aproximar de O(n).
+"""
+
 class No:
     def __init__(self, chave, valor):
         self.chave = chave      # Pode ser id_conteudo, id_usuario, etc.
@@ -10,14 +16,22 @@ class ArvoreBinariaBusca:
         self.raiz = None
 
     def inserir(self, chave, valor):
-        """Insere um novo elemento na árvore.
-        Complexidade: O(h), h = altura da árvore."""
+        """
+        Insere um novo elemento na árvore.
+        Complexidade: O(h), h = altura da árvore.
+        Se a árvore estiver vazia, cria a raiz."""
         if self.raiz is None:
             self.raiz = No(chave, valor)
         else:
             self._inserir(self.raiz, chave, valor)
 
     def _inserir(self, no_atual, chave, valor):
+        """
+        Auxiliar para inserir um novo nó na árvore.
+        Complexidade: O(h), h = altura da árvore.
+        Se a chave for menor, insere na subárvore esquerda.
+        Se a chave for maior, insere na subárvore direita.
+        """
         if chave < no_atual.chave:
             if no_atual.esquerda is None:
                 no_atual.esquerda = No(chave, valor)
@@ -32,11 +46,14 @@ class ArvoreBinariaBusca:
             no_atual.valor = valor  # Atualiza se já existir
 
     def buscar(self, chave):
-        """Busca um elemento pela chave.
-        Complexidade: O(h)."""
+        """
+        Busca um elemento pela chave.
+        Complexidade: O(h).
+        """
         return self._buscar(self.raiz, chave)
 
     def _buscar(self, no_atual, chave):
+        """Auxiliar para buscar um nó na árvore."""
         if no_atual is None:
             return None
         if chave == no_atual.chave:
@@ -54,17 +71,25 @@ class ArvoreBinariaBusca:
         return resultado
 
     def _percurso_em_ordem(self, no_atual, resultado):
+        """
+        Auxiliar para realizar o percurso em ordem.
+        """
         if no_atual:
             self._percurso_em_ordem(no_atual.esquerda, resultado)
             resultado.append(no_atual.valor)
             self._percurso_em_ordem(no_atual.direita, resultado)
 
     def remover(self, chave):
-        """Remove um elemento pela chave.
-        Complexidade: O(h)."""
+        """
+        Remove um elemento pela chave.
+        Complexidade: O(h).
+        """
         self.raiz = self._remover(self.raiz, chave)
 
     def _remover(self, no_atual, chave):
+        """
+        Auxiliar para remover um nó da árvore.
+        """
         if no_atual is None:
             return no_atual
         if chave < no_atual.chave:
@@ -83,6 +108,10 @@ class ArvoreBinariaBusca:
         return no_atual
 
     def _minimo(self, no_atual):
+        """
+        Encontra o nó com a menor chave na subárvore.
+        Complexidade: O(h).
+        """
         while no_atual.esquerda is not None:
             no_atual = no_atual.esquerda
         return no_atual

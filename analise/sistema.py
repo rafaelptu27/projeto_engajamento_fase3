@@ -4,9 +4,9 @@ Classe principal de orquestração do Projeto
 
 Responsável por:
 - Gerenciar entidades: Plataforma, Conteudo, Usuario
-- Controlar geração de IDs únicos para plataformas, respeitando IDs do CSV
 - Carregar e processar dados do CSV de interações
 - Gerar relatórios de análise
+- Implementar algoritmos de ordenação (quicksort e insertion sort)
 """
 
 import csv
@@ -70,27 +70,39 @@ class SistemaAnaliseEngajamento:
     
     def _carregar_interacoes_csv(self, caminho_arquivo: str):
         """
-        Carrega dados brutos do CSV
+        Carrega interações de um arquivo CSV, valida cada linha e enfileira as interações.
+        Se ocorrerem erros de validação, as linhas problemáticas são ignoradas com uma mensagem de aviso.
         """
+        total_linhas = 0
+        linhas_carregadas = 0
+        linhas_ignoradas = 0
         try:
             with open(caminho_arquivo, encoding='utf-8') as f:
                 leitor = csv.DictReader(f) # considera automaticamente que o arquivo possui cabeçalho
                 for linha in leitor:
+                    total_linhas +=1
                     try:
                         self._validar_interacao(linha) # Valida linha antes de enfileirar
                         self._fila_interacoes_brutas.enfileirar(linha)
+                        linhas_carregadas += 1
                     except ValueError as e:
-                        print(f"[AVISO] Linha ignorada: {e}")
+                        print(f"[AVISO] Linha {leitor.line_num} ignorada: {e}")
+                        linhas_ignoradas += 1
+            print(f"\nTotal de linhas do Arquivo: {total_linhas}")
+            print(f"Linhas carregadas com sucesso: {linhas_carregadas}")
+            print(f"Linhas ignoradas devido a erros de validação: {linhas_ignoradas}")
         except (FileNotFoundError, PermissionError) as e:
             print(f"Erro crítico ao carregar CSV: {e}")
             raise
+
         self.processar_interacoes_da_fila()  # Processa as interações após carregar o CSV
 
     def processar_interacoes_da_fila(self):
         """
-        Processa as interações armazenadas na fila, criando ou atualizando conteúdos, usuários e plataformas.
-        Vincula interações a conteúdos e usuários.
+        Processa as interações enfileiradas, validando e registrando cada uma.
+        Cria ou atualiza conteúdos, usuários e plataformas conforme necessário.
         """
+        linhas_processadas = 0
         while not self._fila_interacoes_brutas.is_empty(): # Enquanto houver interações na fila
             dados = self._fila_interacoes_brutas.desenfileirar() # Obtém a próxima interação da fila
             try: # Valida e processa a interação
@@ -136,8 +148,11 @@ class SistemaAnaliseEngajamento:
                 usuario.adicionar_interacao(interacao)
                 plataforma.adicionar_interacao(interacao)
 
+                linhas_processadas += 1 # Incrementa o contador de linhas processadas
+
             except Exception as e:
-                print(f"[ERRO] Falha ao processar interação: {e}") 
+                print(f"[ERRO] Falha ao processar interação: {e}")
+        print(f"Total de interações processadas: {linhas_processadas}") 
 
     # Métodos de gerenciamento de plataforma
 
@@ -186,12 +201,22 @@ class SistemaAnaliseEngajamento:
         Retorna uma lista de todas as plataformas registradas, ordenadas por nome.
         """
         plataformas = list(self._plataformas_registradas.values())
-        algoritmo = 'insertion' if len(plataformas) <= 20 else 'quick'
+        algoritmo = 'insertion' if len(plataformas) <= 20 else 'quick' # Utiliza quicksort para listas grandes e insertion sort para listas pequenas
         self._ordenar_lista(plataformas, algoritmo=algoritmo, key=lambda p: p.nome_plataforma.lower(), reverse=False)
         return plataformas  # Retorna a lista de plataformas ordenadas      
            
     
     # Algoritmos de ordenação
+
+    def identificar_top_n(self, lista, top_n, metrica):
+        """
+        Ordena o top N de uma lista por uma métrica escolhida.
+        Utiliza quicksort para listas grandes por sua eficiência e insertion sort para listas pequenas pela simplicidade e rapidez.
+        Se a lista tiver 20 ou menos itens, usa insertion sort; caso contrário, usa quicksort.
+        """
+        algoritmo = 'insertion' if len(lista) <= 20 else 'quick'
+        self._ordenar_lista(lista, algoritmo=algoritmo, key=metrica, reverse=True)
+        return lista[:top_n] # Retorna o top N
 
     def _ordenar_lista(self, lista, algoritmo, key=None, reverse=False):
         """
@@ -203,12 +228,18 @@ class SistemaAnaliseEngajamento:
             self._insertion_sort(lista, key, reverse)
             
     def _quicksort(self, lista, inicio, fim, key=None, reverse=False):
+        """
+        Implementa o algoritmo quicksort para ordenar uma lista.
+        """
         if inicio < fim:
             p = self._particionar(lista, inicio, fim, key, reverse)
             self._quicksort(lista, inicio, p - 1, key, reverse)
             self._quicksort(lista, p + 1, fim, key, reverse)
     
     def _particionar(self, lista, inicio, fim, key=None, reverse=False):
+        """
+        Particiona a lista para o quicksort, escolhendo um pivô e reorganizando os elementos.
+        """
         pivo = key(lista[fim])
         i = inicio
         for j in range(inicio, fim):
@@ -219,6 +250,9 @@ class SistemaAnaliseEngajamento:
         return i
     
     def _insertion_sort(self, lista, key=None, reverse=False):
+        """
+        Implementa o algoritmo de ordenação insertion sort.
+        """
         for i in range(1, len(lista)):
             atual = lista[i]
             j = i - 1
@@ -226,15 +260,6 @@ class SistemaAnaliseEngajamento:
                 lista[j + 1] = lista[j]
                 j -= 1
             lista[j + 1] = atual
-
-    def identificar_top_n(self, lista, top_n, metrica):
-        """
-        Ordena o top N de uma lista por uma métrica escolhida.
-        """
-        algoritmo = 'insertion' if len(lista) <= 20 else 'quick'
-        self._ordenar_lista(lista, algoritmo=algoritmo, key=metrica, reverse=True)
-        return lista[:top_n] # Retorna o top N
-
 
     # Métodos de análise e relatório
 
@@ -251,8 +276,8 @@ class SistemaAnaliseEngajamento:
             "likes": {'func': lambda c: c.calcular_contagem_por_tipo_interacao().get("like", 0),'nome':'CURTIDAS'},
             "comentarios": {'func': lambda c: c.calcular_contagem_por_tipo_interacao().get("comment", 0),'nome':'COMENTÁRIOS'},
             "shares": {'func': lambda c: c.calcular_contagem_por_tipo_interacao().get("share", 0),'nome':'COMPARTILHAMENTOS'},
-            "tempo_total_consumo": {'func': lambda c: str(timedelta(seconds=int(c.calcular_tempo_total_consumo()))),'nome':'TEMPO TOTAL DE CONSUMO'},
-            "media_tempo_consumo": {'func': lambda c: str(timedelta(seconds=int(c.calcular_media_tempo_consumo()))),'nome':'MÉDIA DE TEMPO DE CONSUMO'}
+            "tempo_total_consumo": {'func': lambda c: c.calcular_tempo_total_consumo(),'nome':'TEMPO TOTAL DE CONSUMO'},
+            "media_tempo_consumo": {'func': lambda c: c.calcular_media_tempo_consumo(),'nome':'MÉDIA DE TEMPO DE CONSUMO'}
         }
 
         while True:  # Loop para usuário selecionar a métrica
@@ -311,11 +336,13 @@ class SistemaAnaliseEngajamento:
                     top_conteudos = self.identificar_top_n(conteudos_ordenados, top_n, metricas_map[metrica]['func'])
 
                     print(f"TOP {top_n} CONTEÚDOS POR {metricas_map[metrica]['nome']}:\n")
-                    print(f"{'ID':<4} | {'Conteúdo':<30} | {metricas_map[metrica]['nome']:<25}")
+                    print(f"{'Rank':<4} | {'ID':<4} | {'Conteúdo':<30} | {metricas_map[metrica]['nome']:<25}")
                     print("-" * 65)
-                    for conteudo in top_conteudos:
+                    for i, conteudo in enumerate(top_conteudos, 1):
                         valor = metricas_map[metrica]['func'](conteudo)
-                        print(f"{conteudo.id_conteudo:<4} | {conteudo.nome_conteudo:<30} | {valor:<25.2f}" if isinstance(valor, float) else f"{conteudo.id_conteudo:<4} | {conteudo.nome_conteudo:<30} | {valor:<25}")
+                        if metrica in ['media_tempo_consumo', 'tempo_total_consumo']:
+                            valor = str(timedelta(seconds=int(valor)))
+                        print(f"{i:<4} | {conteudo.id_conteudo:<4} | {conteudo.nome_conteudo:<30} | {valor:<25.2f}" if isinstance(valor, float) else f"{i:<4} | {conteudo.id_conteudo:<4} | {conteudo.nome_conteudo:<30} | {valor:<25}")
                     input("\nPressione Enter para voltar...")
                 elif sub_opcao == "0":
                     break  # Sai do loop de métricas
@@ -385,23 +412,24 @@ class SistemaAnaliseEngajamento:
                     top_usuarios = self.identificar_top_n(usuarios_ordenados, top_n, metricas_map[metrica]['func'])
 
                     print(f"TOP {top_n} USUÁRIOS POR {metricas_map[metrica]['nome']}:\n")
-                    print(f"{'Usuário':<7} | {'Interações':<10} | {'Comentários':<11} | {'Conteúdos':<9} | {'Tempo Total Assistido':<24} | {'Plataformas Mais Frequentes':<35} | {'Views':<7} | {'Likes':<7} | {'Shares':<7}")
-                    print("-" * 140)
-                    for usuario in top_usuarios:
+                    print(f"{'Rank':<4} | {'Usuário':<7} | {'Interações':<10} | {'Comentários':<11} | {'Conteúdos':<9} | {'Tempo Total Assistido':<21} | {'Plataformas Mais Frequentes':<38} | {'Views':<7} | {'Likes':<7} | {'Shares':<7}")
+                    print("-" * 148)
+                    for i, usuario in enumerate(top_usuarios, 1):
                         plataformas_str = ', '.join(
                             f"{p[0].nome_plataforma}({p[1]})" if hasattr(p[0], 'nome_plataforma') else str(p[0])
                             for p in usuario.plataformas_mais_frequentes(top_n=3)
                         )
-                        print(f"{usuario.id_usuario:<7} | "
+                        print(f"{i:<4} | "
+                            f"{usuario.id_usuario:<7} | "
                             f"{len(usuario.interacoes):<10} | "
                             f"{len(usuario.filtrar_interacoes_por_tipo('comment')):<11} | "
                             f"{len(usuario.obter_conteudos_unicos()):<9} | "
-                            f"{str(timedelta(seconds=int(usuario.calcular_tempo_total_assistido()))):<24} | "
-                            f"{plataformas_str:<35} | "
+                            f"{str(timedelta(seconds=int(usuario.calcular_tempo_total_assistido()))):<21} | "
+                            f"{plataformas_str:<38} | "
                             f"{len(usuario.filtrar_interacoes_por_tipo('view_start')):<7} | "
                             f"{len(usuario.filtrar_interacoes_por_tipo('like')):<7} | "
                             f"{len(usuario.filtrar_interacoes_por_tipo('share')):<7}")
-                    print("-" * 140)
+                    print("-" * 148)
                     input("\nPressione Enter para voltar...")
 
                 elif sub_opcao == "0":
@@ -443,6 +471,10 @@ class SistemaAnaliseEngajamento:
         print("-" * 150)
     
     def gerar_relatorio_engajamento_plataformas(self, top_n=10):
+        """
+        Gera relatórios de engajamento das plataformas cadastradas.
+        Permite ao usuário escolher entre diferentes métricas de engajamento.
+        """
         plataformas = self.listar_plataformas()  # Obtém lista de todas plataformas cadastradas
 
         metricas_map = {
@@ -482,10 +514,11 @@ class SistemaAnaliseEngajamento:
                     top_plataformas = self.identificar_top_n(plataformas_ordenadas, top_n, metricas_map[metrica]['func'])
 
                     print(f"TOP {top_n} PLATAFORMAS POR {metricas_map[metrica]['nome']}:\n")
-                    print(f"{'Plataforma':<15} | {'Interações de Engajamento':<25} | {'Tempo Médio de Consumo':<22} | {'Tempo Total Assistido':<25}")
+                    print(f"{'Rank':<4} | {'Plataforma':<15} | {'Interações de Engajamento':<25} | {'Tempo Médio de Consumo':<22} | {'Tempo Total Assistido':<25}")
                     print("-" * 140)
-                    for plataforma in top_plataformas:
-                        print(f"{plataforma.nome_plataforma:<15} | "
+                    for i, plataforma in enumerate(top_plataformas, 1):
+                        print(f"{i:<4} | "
+                            f"{plataforma.nome_plataforma:<15} | "
                             f"{plataforma.calcular_total_interacoes_engajamento():<25} | "
                             f"{str(timedelta(seconds=int(plataforma.calcular_media_tempo_consumo()))):<22} | "
                             f"{str(timedelta(seconds=int(plataforma.calcular_tempo_total_consumo()))):<25}")
@@ -500,12 +533,21 @@ class SistemaAnaliseEngajamento:
     
     @property
     def plataformas_registradas(self):
+        """
+        Retorna um dicionário de plataformas registradas, onde a chave é o nome da plataforma.
+        """
         return dict(self._plataformas_registradas)
     
     @property
     def conteudos_registrados(self):
+        """
+        Retorna um dicionário de conteúdos registrados, onde a chave é o ID do conteúdo.
+        """
         return {c.id_conteudo: c for c in self._arvore_conteudos.percurso_em_ordem()}
 
     @property
     def usuarios_registrados(self):
+        """
+        Retorna um dicionário de usuários registrados, onde a chave é o ID do usuário.
+        """
         return {u.id_usuario: u for u in self._arvore_usuarios.percurso_em_ordem()}

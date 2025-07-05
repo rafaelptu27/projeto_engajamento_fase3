@@ -1,3 +1,8 @@
+"""
+Implementação de uma fila utilizando uma lista.
+Segue o princípio FIFO.
+"""
+
 class Fila:
     def __init__(self):
         self.itens = []
