@@ -4,7 +4,7 @@ class Conteudo(ABC): # O ABC indica que a classe é abstrata e não pode ser ins
     """
     Classe base abstrata para conteúdos (vídeo, podcast, artigo).
     """
-    def __init__(self, id_conteudo: int, nome_conteudo: str):
+    def __init__(self, id_conteudo: int, nome_conteudo: str, duracao_total: int = None):
         """
         Inicializa o conteúdo com identificador único e nome.
         """
@@ -13,10 +13,15 @@ class Conteudo(ABC): # O ABC indica que a classe é abstrata e não pode ser ins
 
         if not nome_conteudo or not nome_conteudo.strip(): # Verifica se nome_conteudo não é vazio ou apenas espaços em branco
             raise ValueError("O nome do conteúdo não pode ser vazio.")
+        
+        if duracao_total is not None and (not isinstance(duracao_total, int) or duracao_total <0):
+            raise ValueError("A duração total deve ser um inteiro não negativo.")
+        
 
         # Inicializa os atributos da classe de forma privada
         self.__id_conteudo = id_conteudo
         self.__nome_conteudo = nome_conteudo.strip()
+        self.__duracao_total = duracao_total
 
         self._interacoes = []  # Inicializa a lista de interações como vazia e protegida (acessível por subclasses)
 
@@ -29,6 +34,11 @@ class Conteudo(ABC): # O ABC indica que a classe é abstrata e não pode ser ins
     def nome_conteudo(self):
         """Retorna o nome do conteúdo"""
         return self.__nome_conteudo
+    
+    @property
+    def duracao_total(self):
+        """Retorna a duração total do conteúdo em segundos"""
+        return self.__duracao_total
 
     @property
     def interacoes(self):
@@ -95,17 +105,11 @@ class Video(Conteudo):
     """
     Classe que representa um vídeo, estendendo a classe Conteudo.
     """
-    def __init__(self, id_conteudo: int, nome_conteudo: str, duracao_total_segundos: int):
-        super().__init__(id_conteudo, nome_conteudo)# Inicializa a classe base (Conteudo)
-        if not isinstance(duracao_total_segundos, int) or duracao_total_segundos < 0:
+    def __init__(self, id_conteudo: int, nome_conteudo: str, duracao_total: int = None):
+        if not isinstance(duracao_total, int) or duracao_total < 0:
             raise ValueError("A duração total do vídeo deve ser um inteiro não negativo.")
-        self.__duracao_total_segundos = duracao_total_segundos
-
-    @property
-    def duracao_total_segundos(self):
-        """Retorna a duração total em segundos"""
-        return self.__duracao_total_segundos
-
+        super().__init__(id_conteudo, nome_conteudo, duracao_total)# Inicializa a classe base (Conteudo)
+        
     def calcular_metricas(self):
         """
         Sobscreve o método abstrato herdado de "Conteudo"
@@ -123,26 +127,21 @@ class Video(Conteudo):
         """Calcula o percentual médio assistido do vídeo."""
         media_consumo = self.calcular_media_tempo_consumo()
                 
-        if not self.__duracao_total_segundos:
+        if not self.duracao_total:
             return "Não há informação da duração total do conteúdo"
-        if self.__duracao_total_segundos > 0:
-            return round((media_consumo / self.__duracao_total_segundos) * 100, 2)
+        if self.duracao_total > 0:
+            return round((media_consumo / self.duracao_total) * 100, 2)
         return 0.0
 
 class Podcast(Conteudo):
     """
     Classe que representa um podcast, estendendo a classe Conteudo.
     """
-    def __init__(self, id_conteudo, nome_conteudo, duracao_total_segundos):
-        super().__init__(id_conteudo, nome_conteudo)
-        if duracao_total_segundos is not None and (not isinstance(duracao_total_segundos, int) or duracao_total_segundos < 0):
+    def __init__(self, id_conteudo: int, nome_conteudo: str, duracao_total: int =None):
+        if duracao_total is not None and (not isinstance(duracao_total, int) or duracao_total < 0):
             raise ValueError("A duração total do episódio deve ser um inteiro não negativo.")
-        self.__duracao_total_segundos = duracao_total_segundos 
-
-    @property
-    def duracao_total_segundos(self):
-        return self.__duracao_total_segundos
-
+        super().__init__(id_conteudo, nome_conteudo, duracao_total)
+        
     def calcular_metricas(self):
         """
         Sobscreve o método abstrato herdado de "Conteudo"
@@ -162,26 +161,22 @@ class Podcast(Conteudo):
         """
         media_consumo = self.calcular_media_tempo_consumo()
         
-        if not self.__duracao_total_segundos:
+        if not self.duracao_total:
             return "Não há informação da duração total do conteúdo"
-        if self.__duracao_total_segundos > 0:
-            return round((media_consumo / self.__duracao_total_episodio_seg) * 100, 2)
+        if self.duracao_total > 0:
+            return round((media_consumo / self.duracao_total) * 100, 2)
         return 0.0
 
 class Artigo(Conteudo):
     """
     Classe que representa um artigo, estendendo a classe Conteudo.
     """
-    def __init__(self, id_conteudo, nome_conteudo, tempo_leitura_estimado_segundos):
-        super().__init__(id_conteudo, nome_conteudo)
+    def __init__(self, id_conteudo, nome_conteudo, tempo_leitura_estimado_segundos=None):
         if tempo_leitura_estimado_segundos is not None and (not isinstance(tempo_leitura_estimado_segundos, int) or tempo_leitura_estimado_segundos < 0):
             raise ValueError("O tempo de leitura estimado deve ser um inteiro não negativo.")
-        self.__tempo_leitura_estimado_segundos = tempo_leitura_estimado_segundos
+        super().__init__(id_conteudo, nome_conteudo, tempo_leitura_estimado_segundos)
 
-    @property
-    def tempo_leitura_estimado_segundos(self):
-        """Retorna o tempo estimado de leitura em segundos."""
-        return self.__tempo_leitura_estimado_segundos
+
 
     def calcular_metricas(self):
         """
@@ -200,9 +195,8 @@ class Artigo(Conteudo):
         Calcula o percentual médio lido do artigo.
         """
         media_consumo = self.calcular_media_tempo_consumo()
-        usuarios_unicos = set(i.id_usuario for i in self.interacoes if hasattr(i, 'id_usuario'))
-        if not self.__tempo_leitura_estimado_segundos:
+        if not self.duracao_total:
             return "Não há informação da duração total do conteúdo"
-        if self.__tempo_leitura_estimado_segundos > 0:
-            return round((media_consumo / self.__tempo_leitura_estimado_seg) * 100, 2)
+        if self.duracao_total > 0:
+            return round((media_consumo / self.duracao_total) * 100, 2)
         return 0.0
