@@ -5,7 +5,9 @@ import os # Importa módulo para interações com o sistema operacional (utilize
 csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "interacoes_globo.csv")
 
 def exibir_menu_relatorios(sistema):
-    '''Função para exibir o menu de relatórios.'''
+    """
+    Função para exibir o menu de relatórios.
+    """
     while True:  # Loop do menu (até que o usuário decida sair)
         os.system('cls')  # Limpa o terminal
         # Exibe as opções do menu

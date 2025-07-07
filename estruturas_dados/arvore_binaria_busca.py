@@ -19,7 +19,8 @@ class ArvoreBinariaBusca:
         """
         Insere um novo elemento na árvore.
         Complexidade: O(h), h = altura da árvore.
-        Se a árvore estiver vazia, cria a raiz."""
+        Se a árvore estiver vazia, cria a raiz.
+        """
         if self.raiz is None:
             self.raiz = No(chave, valor)
         else:
@@ -53,7 +54,9 @@ class ArvoreBinariaBusca:
         return self._buscar(self.raiz, chave)
 
     def _buscar(self, no_atual, chave):
-        """Auxiliar para buscar um nó na árvore."""
+        """
+        Auxiliar para buscar um nó na árvore.
+        """
         if no_atual is None:
             return None
         if chave == no_atual.chave:
@@ -64,8 +67,10 @@ class ArvoreBinariaBusca:
             return self._buscar(no_atual.direita, chave)
 
     def percurso_em_ordem(self):
-        """Retorna uma lista dos valores em ordem de chave.
-        Complexidade: O(n)."""
+        """
+        Retorna uma lista dos valores em ordem de chave.
+        Complexidade: O(n).
+        """
         resultado = []
         self._percurso_em_ordem(self.raiz, resultado)
         return resultado
