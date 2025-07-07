@@ -1,5 +1,9 @@
 # projeto_engajamento_fase3
 
+Grupo 2 : Rafael Dias, Maria Emília, Warley, Luis Dalagna
+
+Escopo sugerido:
+
 Projeto Unificado - Fase 3: Análise de Engajamento de Mídias Globo com Estruturas de Dados
 Objetivo principal: Aplicar os princípios fundamentais de Algoritmos e Estruturas de Dados na análise de dados de engajamento de mídias, utilizando as estruturas de dados adequadas para otimizar o processamento e a recuperação de informações.
 
